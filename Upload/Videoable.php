@@ -7,6 +7,8 @@
 
 namespace App\Upload;
 
+use App\Upload\Model\Video;
+
 /**
  * Trait Videoable
  * @package App\Upload
@@ -33,6 +35,10 @@ trait Videoable
 		return \Youtube::upload($file->getRealPath(), ['title' => $file->getClientOriginalName()]);
 	}
 
+	/**
+	 * @param string $url
+	 * @return string|null
+	 */
 	protected function youtubeIdFromUrl($url)
 	{
 	    $pattern =
@@ -62,38 +68,10 @@ trait Videoable
 	/**
 	 * @param string $attr
 	 * @param string $value
-	 * @return string
+	 * @return Video
 	 */
 	protected function castVideoFile($attr, $value)
 	{
-		return 'http://www.youtube.com/embed/' . $value;
-	}
-
-	/**
-	 * @param string $attr
-	 * @param string $value
-	 * @return string
-	 */
-	protected function castVideoPreviewFile($attr, $value)
-	{
-		@list($video_attr, $preview_version) = explode('_', preg_replace('/_?preview/', '', $attr));
-
-		if (!$video_attr){
-			$video_attr = head($this->getFiles('video'));
-		}
-		return $this->getVideoPreview($this->{$video_attr}, $preview_version);
-	}
-
-	/**
-	 * @param string      $youtube_id
-	 * @param string|null $version
-	 * @return string
-	 */
-	protected function getVideoPreview($youtube_id, $version = null)
-	{
-		if (!$version){
-			$version = 'default';
-		}
-		return "http://img.youtube.com/vi/{$youtube_id}/{$version}.jpg";
+		return new Video($value);
 	}
 }
